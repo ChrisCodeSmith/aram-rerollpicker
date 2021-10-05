@@ -1,4 +1,4 @@
 __pycache__/
 champions/*
-!champions/
+!champions/.gitkeep
 foobar.py
