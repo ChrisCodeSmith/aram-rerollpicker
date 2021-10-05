@@ -6,9 +6,10 @@ import logging
 import pyscreeze as psc
 import win32api
 import win32con
-import keyboard
+import os
 
-champs = ["Teemo", "Ezreal", "Shaco"]
+champ_dir = 'champions/'
+champs = [x.rstrip('.png') for x in os.listdir(champ_dir)]
 
 stop_picking = False
 
@@ -55,25 +56,22 @@ class Gui(tk.Tk):
         stop_picking = True
         self.picker.join()
 
-    def run_picker(self):
-        try:
-            location = psc.locateOnWindow(
-                'Teemo.png', 'League of Legends', confidence=0.7, grayscale=True)
-            print(location)
-            if location != None:
-                logging.info(f"I found T on {location}")
-                time.sleep(0.5)
-            else:
-                logging.info("Where is T?")
-                time.sleep(0.5)
-        except psc.PyScreezeException:
-            logging.error("Thread: League of Legends is not running.")
-
     def picker_runner(self):
         global stop_picking
         logging.info(f"Thread: starting")
         while True:
-            self.run_picker()
+            try:
+                location = psc.locateOnWindow(os.path.join(champ_dir,
+                                                           'Teemo.png'), 'League of Legends', confidence=0.7, grayscale=True)
+                print(location)
+                if location != None:
+                    logging.info(f"I found T on {location}")
+                    time.sleep(0.5)
+                else:
+                    logging.info("Where is T?")
+                    time.sleep(0.5)
+            except psc.PyScreezeException:
+                logging.error("Thread: League of Legends is not running.")
             if stop_picking:
                 break
         logging.info(f"Thread: stopping")
