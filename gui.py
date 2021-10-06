@@ -6,6 +6,8 @@ import logging
 import pyscreeze as psc
 import win32api
 import win32con
+import pygetwindow as pgw
+
 import os
 
 champ_dir = 'champions/'
@@ -59,22 +61,28 @@ class Gui(tk.Tk):
     def picker_runner(self):
         global stop_picking
         logging.info(f"Thread: starting")
+        win = pgw.getWindowsWithTitle('League')[0]
+        win = precise_hey(win)
         while True:
             try:
-                location = psc.locateOnWindow(os.path.join(champ_dir,
-                                                           'Teemo.png'), 'League of Legends', confidence=0.7, grayscale=True)
-                print(location)
-                if location != None:
-                    logging.info(f"I found T on {location}")
-                    time.sleep(0.5)
-                else:
-                    logging.info("Where is T?")
-                    time.sleep(0.5)
+                for champ in champs:
+                    val = psc.locateOnScreen(os.path.join(
+                        champ_dir, champ+".png"), region=win, confidence=0.8, grayscale=True)
+                    logging.info(f"{champ}: {val} #DEBUG: {win}")
+                    click(val.left + val.width/2, val.top + val.height/2)
+                time.sleep(0.1)
             except psc.PyScreezeException:
                 logging.error("Thread: League of Legends is not running.")
             if stop_picking:
                 break
         logging.info(f"Thread: stopping")
+
+
+def precise_hey(win):
+    # production aram return
+    return (win.left+200, win.top+20, win.width-200, win.height-600)
+    # debug return for training matches:
+    # return (win.left, win.top, win.width-1300, win.height-200)
 
 
 def click(x, y):
