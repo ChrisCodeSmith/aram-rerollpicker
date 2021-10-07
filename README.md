@@ -13,19 +13,26 @@ To add a champion, just create a folder named "champions" and copy your image in
 
 - in order to enable more than one champ for your pick pool, we need to check which champ is selected, so if we already have Teemo(which is #1 in our pool), dont pick Singed(#2). -> locate region for picked champ ( use tip from Find gui regions )
 - solve infinite clicking on champ. Half way solved when feature above is implemented. I.e. as soon as champ is selected, stop clicking
+- implement reroll with pickback button and function(i.e. if you reroll and the new champ is not in your fav list, pickback the one you rolled away)
 
 ## Find gui regions with py
 
 ```
-import pyscreeze
-import pygetwindow
+import pyscreeze as psc
+import pygetwindow as pgw
 
 win = pgw.getWindowsWithTitle('League')[0]
-win = (win.left, win.top, win.width-100, win.height)
-img = pyscreeze.screenshot(region=win)
+winm = (win.left, win.top, win.width-100, win.height)
+img = psc.screenshot(region=winm)
 img.save(r"C:\YourPath\savedIMG.png")
 ```
 
 use this and play with the region parameters e.g. subtract from win.width
 
-remeber to have the window not minimized
+remeber to have the window not minimized, when executing winm=(...) line
+
+## Git workflow
+
+- git add .
+- git commit -m"<foobar>"
+- git push origin master

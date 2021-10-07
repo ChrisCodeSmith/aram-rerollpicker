@@ -10,6 +10,10 @@ import pygetwindow as pgw
 
 import os
 
+# relative on lolcli with res 1600x900:
+# win reroll region: (x+420, y, width+840, height-820)
+# selected champs: (x+20,y+120,width-1300,height-400)
+
 champ_dir = 'champions/'
 champs = [x.rstrip('.png') for x in os.listdir(champ_dir)]
 
@@ -41,9 +45,9 @@ class Gui(tk.Tk):
         for i, (label, optMenu) in enumerate(self.widgets):
             label.grid(row=i, column=0, padx=10, sticky=tk.W)
             optMenu.grid(row=i, column=1, padx=10, pady=5)
-        self.run.grid(row=len(fields), column=1, sticky=tk.E, padx=10, pady=10)
-        self.stop.grid(row=len(fields)+1, column=1,
-                       sticky=tk.E, padx=10, pady=10)
+        self.run.grid(row=len(fields), column=1, sticky=tk.W, pady=10)
+        self.stop.grid(row=len(fields), column=2,
+                       sticky=tk.W, pady=10)
 
     def start(self):
         global stop_picking
@@ -62,14 +66,19 @@ class Gui(tk.Tk):
         global stop_picking
         logging.info(f"Thread: starting")
         win = pgw.getWindowsWithTitle('League')[0]
-        win = precise_hey(win)
+        win_rr = rel_reroll(win)
+        win_rs = rel_selected(win)
         while True:
             try:
                 for champ in champs:
-                    val = psc.locateOnScreen(os.path.join(
-                        champ_dir, champ+".png"), region=win, confidence=0.8, grayscale=True)
-                    logging.info(f"{champ}: {val} #DEBUG: {win}")
-                    click(val.left + val.width/2, val.top + val.height/2)
+                    rr = psc.locateOnScreen(os.path.join(
+                        champ_dir, champ+".png"), region=win_rr, confidence=0.8, grayscale=True)
+                    rs = psc.locateOnScreen(os.path.join(
+                        champ_dir, champ+".png"), region=win_rs, confidence=0.8, grayscale=True)
+                    logging.info(
+                        f"{champ}: #DEBUG: Reroll:{win_rr}:{rr}, Selected:{win_rs}:{rs}")
+                    if rr != None and rs == None:
+                        click(rr.left + rr.width/2, rr.top + rr.height/2)
                 time.sleep(0.1)
             except psc.PyScreezeException:
                 logging.error("Thread: League of Legends is not running.")
@@ -78,11 +87,15 @@ class Gui(tk.Tk):
         logging.info(f"Thread: stopping")
 
 
-def precise_hey(win):
+def rel_reroll(win):
     # production aram return
-    return (win.left+200, win.top+20, win.width-200, win.height-600)
+    return (win.left+420, win.top, win.width-840, win.height-820)
     # debug return for training matches:
     # return (win.left, win.top, win.width-1300, win.height-200)
+
+
+def rel_selected(win):
+    return (win.left+20, win.top+120, win.width-1300, win.height-400)
 
 
 def click(x, y):
