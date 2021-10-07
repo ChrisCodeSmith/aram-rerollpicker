@@ -11,9 +11,15 @@ To add a champion, just create a folder named "champions" and copy your image in
 
 ## Todo:
 
-- in order to enable more than one champ for your pick pool, we need to check which champ is selected, so if we already have Teemo(which is #1 in our pool), dont pick Singed(#2). -> locate region for picked champ ( use tip from Find gui regions )
-- solve infinite clicking on champ. Half way solved when feature above is implemented. I.e. as soon as champ is selected, stop clicking
-- implement reroll with pickback button and function(i.e. if you reroll and the new champ is not in your fav list, pickback the one you rolled away)
+### High Prio
+
+- [] check several needleimages to one heystackimage -> if not possible with pyscreeze, maybe swap to pillow and maybe enhance pyscreeze
+
+### Average Prio
+
+- [] in order to enable more than one champ for your pick pool, we need to check which champ is selected, so if we already have Teemo(which is #1 in our pool), dont pick Singed(#2). -> locate region for picked champ ( use tip from Find gui regions )
+- [] solve infinite clicking on champ. Half way solved when feature above is implemented. I.e. as soon as champ is selected, stop clicking
+- [] implement reroll with pickback button and function(i.e. if you reroll and the new champ is not in your fav list, pickback the one you rolled away)
 
 ## Find gui regions with py
 
