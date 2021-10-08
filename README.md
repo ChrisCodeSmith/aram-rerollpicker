@@ -8,6 +8,7 @@ To add a champion, just create a folder named "champions" and copy your image in
 
 - At the moment this program only handles one champion in the folder and the selection for champs in the gui doesnt work yet. It only picks one champ therefore!
 - Not working: Algorithm imcomplete until we found out how to check a haystack for several needels
+- at the moment its possible to start inf threads, prevent startign a new thread after one has created
 
 ## Todo:
 

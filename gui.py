@@ -34,9 +34,9 @@ class Gui(tk.Tk):
 
         fields = ["First", "Second", "Third"]
         labels = [tk.Label(self, text=f) for f in fields]
-        vars = [tk.StringVar(self) for _ in fields]
-        print(vars)
-        optMenus = [tk.OptionMenu(self, var, *champs) for var in vars]
+        self.vars = [tk.StringVar(self) for _ in fields]
+        print(self.vars)
+        optMenus = [tk.OptionMenu(self, var, *champs) for var in self.vars]
         self.widgets = list(zip(labels, optMenus))
         self.run = tk.Button(self, text="Run Picker",
                              command=self.start)
@@ -60,25 +60,40 @@ class Gui(tk.Tk):
     def stop(self):
         global stop_picking
         stop_picking = True
-        self.picker.join()
 
     def picker_runner(self):
         global stop_picking
+        vars = self.vars
         logging.info(f"Thread: starting")
         win = pgw.getWindowsWithTitle('League')[0]
         win_rr = rel_reroll(win)
         win_rs = rel_selected(win)
         while True:
             try:
+                rr_img = psc.screenshot(region=win_rr)
+                rs_img = psc.screenshot(region=win_rs)
+                rr = []
+                rs = []
                 for champ in champs:
-                    rr = psc.locateOnScreen(os.path.join(
-                        champ_dir, champ+".png"), region=win_rr, confidence=0.8, grayscale=True)
-                    rs = psc.locateOnScreen(os.path.join(
-                        champ_dir, champ+".png"), region=win_rs, confidence=0.8, grayscale=True)
-                    logging.info(
-                        f"{champ}: #DEBUG: Reroll:{win_rr}:{rr}, Selected:{win_rs}:{rs}")
-                    if rr != None and rs == None:
-                        click(rr.left + rr.width/2, rr.top + rr.height/2)
+                    rr.append(psc.locateAll(os.path.join(
+                        champ_dir, champ+".png"), rr_img, grayscale=True, confidence=0.8))
+                    rs.append(psc.locateAll(os.path.join(
+                        champ_dir, champ+".png"), rs_img, grayscale=True, confidence=0.8))
+                    # logging.info(f"{champ}: #DEBUG: Reroll:{win_rr}:{*rr,}, Selected:{win_rs}:{*rs,}")
+
+                    # Algo for picking:
+                    if len(rr) > 0:
+                        for c in rr:
+                            logging.info(f"c: {c}, vars[0]: {vars[0].get()}")
+                            if c == vars[0].get():
+                                print(f"I'd pick {c}")
+                                # click(rr.left + rr.width/2, rr.top + rr.height/2)
+                            if c == vars[1].get() and c not in rs:
+                                print(f"I'd pick {c}")
+                                # click(rr.left + rr.width/2, rr.top + rr.height/2)
+                            elif c == vars[2].get() and c not in rs:
+                                print(f"I'd pick {c}")
+                                # click(rr.left + rr.width/2, rr.top + rr.height/2)
                 time.sleep(0.1)
             except psc.PyScreezeException:
                 logging.error("Thread: League of Legends is not running.")
